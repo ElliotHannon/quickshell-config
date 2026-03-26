@@ -1,0 +1,22 @@
+# ~/.config/quickshell/config.toml
+
+[qml]
+
+# Or if you want to specify exact module
+modules = [
+    "Quickshell.Services.Mpris",
+    "Quickshell.Services",
+    "Quickshell",
+]
+
+[services]
+mpris = true
+upower = false  # Consider setting to true for lid detection
+pipewire = false
+notifications = false
+
+# Add your quickshell instances
+[[instances]]
+shell = "shell.qml"
+name = "main"
+autostart = true
