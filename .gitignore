@@ -1,0 +1,13 @@
+# Backup files
+*.swp
+*~
+*.bak
+
+.DS_Store
+Thumbs.db
+
+build/
+dist/
+*.o
+
+*.local.conf
