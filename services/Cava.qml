@@ -23,7 +23,6 @@ Singleton {
     
     running: true
 
-    // Simpler command construction - use an array of arguments
     command: [
       "sh",
       "-c",
