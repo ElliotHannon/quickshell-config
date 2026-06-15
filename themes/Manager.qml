@@ -6,8 +6,8 @@ import "."
 QtObject {
   // Theme definitions
   property var themes: [
-    PokemonGold,
     ArceusTrio,
+    PokemonGold,
     RayquazaCanyon,
     PinkRayquaza,
     RiverForestPokemon
