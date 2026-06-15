@@ -6,7 +6,7 @@ import QtQuick
 
 Item {
   id: root
-  
+
   property color textColor: "#ffffbb"
   property color chargingColor: "#55ff22"
   property color lowBatteryColor: "#ffdd33"
@@ -25,15 +25,15 @@ Item {
   readonly property string battery90Icon: "󰂂"
   readonly property string battery100Icon: "󰁹"
 
-  readonly property string battery10IconCharging: "󰢜"
-  readonly property string battery20IconCharging: "󰂆"
-  readonly property string battery30IconCharging: "󰂇"
-  readonly property string battery40IconCharging: "󰂈"
-  readonly property string battery50IconCharging: "󰢝"
-  readonly property string battery60IconCharging: "󰂉"
-  readonly property string battery70IconCharging: "󰢞"
-  readonly property string battery80IconCharging: "󰂊"
-  readonly property string battery90IconCharging: "󰂋"
+  readonly property string battery10IconCharging: "󰂄"
+  readonly property string battery20IconCharging: "󰂄"
+  readonly property string battery30IconCharging: "󰂄"
+  readonly property string battery40IconCharging: "󰂄"
+  readonly property string battery50IconCharging: "󰂄"
+  readonly property string battery60IconCharging: "󰂄"
+  readonly property string battery70IconCharging: "󰂄"
+  readonly property string battery80IconCharging: "󰂄"
+  readonly property string battery90IconCharging: "󰂄"
   readonly property string battery100IconCharging: "󱈑"
   readonly property real percentage: displayDevice.percentage
 
@@ -47,7 +47,7 @@ Item {
     rowLayout.iconText.color = findColor();
   }
 
- 
+
   implicitWidth: rowLayout.implicitWidth
   implicitHeight: rowLayout.implicitHeight
 
@@ -75,34 +75,28 @@ Item {
     id: rowLayout
     spacing: 2
     Text {
-        id: iconText
-        color: findColor()
-        text: findBatteryIcon()
-        font.pointSize: iconSize
-        font.family: "Nerd-font"
-        Layout.alignment: Qt.AlignBottom
-        Behavior on color {
-      ColorAnimation {
-        duration: 250
-        easing.type: Easing.InOutQuad
-      }
-    }
-    }
-    /*
-    Text {
-      id: percentageText
-     // Layout.alignment: Qt.AlignHCenter
+      id: iconText
       color: findColor()
-      text: " " + Math.round(root.percentage * 100) + "%"
-      font.pointSize: fontSize 
+      text: findBatteryIcon()
+      font.pointSize: iconSize
       font.family: "Nerd-font"
       Layout.alignment: Qt.AlignBottom
       Behavior on color {
-      ColorAnimation {
-        duration: 250
-        easing.type: Easing.InOutQuad
+        ColorAnimation {
+          duration: 250
+          easing.type: Easing.InOutQuad
+        }
+      }
+      // Add at the end of Battery.qml, after the RowLayout
+      MouseArea {
+        anchors.fill: parent
+        onClicked: {
+          if (root.onPopupToggle) {
+            root.onPopupToggle()
+          }
+        }
+        cursorShape: Qt.PointingHandCursor
       }
     }
-  }*/
   }
 }

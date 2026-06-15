@@ -1,15 +1,17 @@
+// features/bar/Bar.qml
 import QtQuick
 import QtQuick.Layouts 
 import Quickshell 
 import Quickshell.Hyprland 
 import Qt5Compat.GraphicalEffects 
-import "../../components" as Components 
+import "../../components/barWidgets" as Widgets
+import "../../components/popups" as Popups  // Add this import for popups
 import "../../themes" as Themes 
 import "../../visuals" as Visuals 
 
 PanelWindow { 
   id: panel 
-  
+
   required property ShellScreen screen
   readonly property var theme: Themes.Manager.active 
   color: "transparent" 
@@ -24,8 +26,28 @@ PanelWindow {
     left: 0 
     right: 0 
     bottom: 0 
-  } 
-  
+  }
+
+  // ===== POPUP MANAGEMENT =====
+  property var activePopups: ({})
+  property int padding: theme ? theme.popupPadding : 8
+  property int radius: theme ? theme.popupRadius : 8
+  property int spacing: theme ? theme.popupSpacing : 4
+  property color popupColor: theme ? theme.popupBackground : "#2a3b4c"
+
+  function collapseAllBut(exceptName) {
+    for (var name in activePopups) {
+      if (name !== exceptName && activePopups[name]) {
+        activePopups[name].collapse()
+      }
+    }
+  }
+
+  function registerPopup(name, popupInstance) {
+    activePopups[name] = popupInstance
+  }
+  // ===== END POPUP MANAGEMENT =====
+
   Rectangle { 
     id: bar 
     anchors.fill: parent 
@@ -45,20 +67,20 @@ PanelWindow {
         radius: bar.radius 
       }
     }
-    
+
     // Vertical Cava visualization 
     Visuals.CavaWaveform { 
       anchors.fill: parent 
       waveColor: theme.cavaWaveColor 
       highlightColor: theme.cavaFillColor 
-      waveIntensity: 34 
-      lineWidth: 2 
-      smoothness: 0.95
-      showFill: true 
+      waveIntensity: 29 
+      lineWidth: 1.5 
+      smoothness: 0.99
+      showFill: true
       waveOpacity: 0.6 
-      sampleRate: 500 
+      sampleRate: 500
     }
-    
+
     // Semi-transparent overlay 
     Rectangle { 
       anchors.fill: parent 
@@ -66,25 +88,25 @@ PanelWindow {
       opacity: 0.2 
       radius: parent.radius 
     }
-    
+
     // Main layout - THREE SECTION COLUMN
     ColumnLayout { 
       anchors.fill: parent 
-      spacing: 0  // No spacing between sections
-      
+      spacing: 0
+
       // TOP SECTION - Arch icon + Workspaces
       Item {
         Layout.alignment: Qt.AlignTop
         Layout.fillWidth: true
         Layout.fillHeight: true
-        Layout.preferredHeight: 8 // Adjust as needed
-        
+        Layout.preferredHeight: 8
+
         Column {
           anchors.centerIn: parent
           spacing: 0
-          
+
           // Arch icon
-          Components.ArchIcon { 
+          Widgets.ArchIcon { 
             anchors.horizontalCenter: parent.horizontalCenter
             animationDuration: 350 
             iconColor: theme.archIcon 
@@ -93,20 +115,18 @@ PanelWindow {
             hoverScale: 1.25 
             onClicked: Themes.Manager.cycleTheme() 
           }
-          
+
           // Workspaces with background
           Item {
             anchors.horizontalCenter: parent.horizontalCenter
             width: workspacesWidget.width + 15
             height: workspacesWidget.height + 15
-          
-            
-            
+
             // Workspaces widget
-            Components.Workspaces {
+            Widgets.Workspaces {
               id: workspacesWidget
               anchors.centerIn: parent
-              
+
               focusedColor: theme.workspaceFocused 
               activeColor: theme.workspaceActive 
               inactiveColor: theme.workspaceInactive 
@@ -116,18 +136,18 @@ PanelWindow {
               workspaceSpacing: 4
             }
           }
-          
         }
       }
-      
+
       // CENTER SECTION - Clock
       Item {
         Layout.alignment: Qt.AlignHCenter
         Layout.fillWidth: true
         Layout.fillHeight: true
-        Layout.preferredHeight: 100  // Adjust as needed
-        
-        Components.Clock { 
+        Layout.preferredHeight: 100
+
+        Widgets.Clock { 
+          id: clockWidget
           anchors.centerIn: parent
           clockColor: theme.clockText 
           hoverInCol: theme.clockText 
@@ -135,24 +155,52 @@ PanelWindow {
           fontSize: 15 
         }
       }
-      
+
       // BOTTOM SECTION - Battery
       Item {
         Layout.fillWidth: true
         Layout.fillHeight: false
         Layout.alignment: Qt.AlignBottom
-        Layout.preferredHeight: 50  // Adjust as needed
+        Layout.preferredHeight: 50
         Layout.bottomMargin: 2
-        
-        Components.Battery { 
+
+        Widgets.Battery { 
+          id: batteryWidget
           anchors.centerIn: parent 
           iconSize: 20 
-          textColor: Themes.Manager.active.batteryText 
-          chargingColor: Themes.Manager.active.batteryCharging 
-          lowBatteryColor: Themes.Manager.active.batteryLow 
-          criticalBatteryColor: Themes.Manager.active.batteryCritical 
+          textColor: theme.batteryText 
+          chargingColor: theme.batteryCharging 
+          lowBatteryColor: theme.batteryLow 
+          criticalBatteryColor: theme.batteryCritical 
+
+          // Add click handler to toggle popup
+          MouseArea {
+            anchors.fill: parent
+            onClicked: batteryPopup.toggle()
+            cursorShape: Qt.PointingHandCursor
+          }
         }
       }
+    }
+  }
+
+  // ===== BATTERY POPUP =====
+  Popups.Popup {
+    id: batteryPopup
+    name: "battery"
+    ref: panel
+    popupWidth: 300
+    popupHeight: 240
+    yPos: 920
+
+    Component.onCompleted: panel.registerPopup(name, batteryPopup)
+
+    // Popup content
+    Popups.BatteryPopup {
+      textColor: theme.clockText
+      accentColor1: theme.archIcon
+      mutedColor: theme.workspaceInactive
+      borderColor: theme.workspaceActive
     }
   }
 }

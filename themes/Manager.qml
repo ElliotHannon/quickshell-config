@@ -6,15 +6,20 @@ import "."
 QtObject {
   // Theme definitions
   property var themes: [
+    PokemonGold,
+    ArceusTrio,
     RayquazaCanyon,
     PinkRayquaza,
-    RiverForestPokemon,
+    RiverForestPokemon
     ]
 
   property int currentIndex: 0
   readonly property var active: themes[currentIndex]
+  
+  property int popupPadding: 12
+  property int popupRadius: 8
+  property int popupSpacing: 8
 
-  // Cycle to next theme
   function cycleTheme() {
     currentIndex = (currentIndex + 1) % themes.length
   }

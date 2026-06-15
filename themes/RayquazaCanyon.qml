@@ -53,4 +53,9 @@ QtObject {
     readonly property color batteryCharging:        "#00ffa6"
     readonly property color batteryLow:             "#ffbe0b"
     readonly property color batteryCritical:        "#ff3c38"
+
+    readonly property color popupBackground:        "#2a3b4c" 
+    readonly property int popupPadding: 12
+    readonly property int popupRadius: 8
+    readonly property int popupSpacing: 8
 }

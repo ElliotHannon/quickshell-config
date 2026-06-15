@@ -15,7 +15,7 @@ Item {
   property real audioThreshold: 0.5             // Minimum amplitude to consider audio active
 
   // Technical properties
-  property int sampleRate: 500                    // Number of Cava samples
+  property int sampleRate: 50                    // Number of Cava samples
   property bool isAudioActive: false              // Track if audio is playing
 
   // Smooth the Cava values for nicer animation
@@ -26,8 +26,6 @@ Item {
     return arr
   })()
 
-  // Single Component.onCompleted block
-  // Initialize smoothed values array
   Component.onCompleted: {
     Services.Cava.sampleCount = root.sampleRate
 
@@ -38,10 +36,8 @@ Item {
     smoothedValues = arr
   }
 
-  // Handle sample rate changes
   onSampleRateChanged: {
     Services.Cava.sampleCount = root.sampleRate
-    // Resize smoothed values array
     var newArray = []
     for (var i = 0; i < root.sampleRate; i++) {
       newArray[i] = smoothedValues[i] || 0
@@ -51,7 +47,7 @@ Item {
 
   Timer {
     id: updateTimer
-    interval: 16  // ~60fps
+    interval: 16  // ~60fps i think
     running: smoothedValues.length > 0
     repeat: true
 
@@ -70,7 +66,7 @@ Item {
         return
       }
 
-      // Check if there's active audio by looking at Cava values
+      // Check for active audio
       var hasActiveAudio = false
       for (var i = 0; i < Math.min(cavaValues.length, 20); i++) {
         var rawValue = parseFloat(cavaValues[i]) || 0
@@ -85,7 +81,6 @@ Item {
       var newValues = smoothedValues.slice()
 
       if (hasActiveAudio) {
-        // Only update smoothed values if audio is active
         for (var i = 0; i < Math.min(root.sampleRate, cavaValues.length); i++) {
           var rawValue = parseFloat(cavaValues[i]) || 0
           var targetAmplitude = (rawValue / 100) * root.waveIntensity
@@ -95,7 +90,7 @@ Item {
       } else {
         // No audio, fade out the waves to zero
         for (var i = 0; i < newValues.length; i++) {
-          newValues[i] += (0 - newValues[i]) * 0.3 // Faster fade out
+          newValues[i] += (0 - newValues[i]) * 0.3 
         }
       }
 
@@ -104,13 +99,12 @@ Item {
   }
 
 
-  // Canvas for drawing the vertical waveform
+  // Canva drawing
   Canvas {
     id: canvas
     anchors.fill: parent
     opacity: root.waveOpacity
 
-    // Get the amplitude at a specific Y position (interpolated)
     function getAmplitudeAt(y) {
       var sampleIndex = (y / height) * root.sampleRate
       var i1 = Math.floor(sampleIndex)
@@ -127,7 +121,6 @@ Item {
       var ctx = getContext("2d")
       ctx.clearRect(0, 0, width, height)
       
-      // Check if we have any non-zero amplitudes to draw
       var hasVisibleWave = false
       for (var i = 0; i < Math.min(root.sampleRate, 20); i++) {
         if (smoothedValues[i] > 0.1) {
@@ -136,14 +129,12 @@ Item {
         }
       }
       
-      // Don't draw anything if there's no wave
       if (!hasVisibleWave && !root.showFill) {
         return
       }
 
       var centerX = width
 
-      // Draw filled areas first (if enabled)
       if (root.showFill && hasVisibleWave) {
         // Right side fill
         ctx.beginPath()
@@ -177,9 +168,7 @@ Item {
         ctx.fill()
       }
 
-      // Only draw lines if there's visible wave
       if (hasVisibleWave) {
-        // Draw right wave line (highlight)
         ctx.beginPath()
         ctx.strokeStyle = root.highlightColor
         ctx.lineWidth = root.lineWidth
@@ -197,7 +186,6 @@ Item {
         }
         ctx.stroke()
 
-        // Draw left wave line (slightly dimmer)
         ctx.beginPath()
         ctx.strokeStyle = root.waveColor
         ctx.lineWidth = root.lineWidth
@@ -215,7 +203,6 @@ Item {
         }
         ctx.stroke()
 
-        // Optional: Draw a subtle center line
         ctx.beginPath()
         ctx.strokeStyle = root.highlightColor
         ctx.lineWidth = 1

@@ -1,0 +1,6 @@
+# Popups
+BasePopup 1.0 BasePopup.qml
+BatteryPopup 1.0 BatteryPopup.qml
+CalendarPopup 1.0 CalendarPopup.qml
+ThemePopup 1.0 ThemePopup.qml
+MediaPopup 1.0 MediaPopup.qml
