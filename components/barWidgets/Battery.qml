@@ -1,3 +1,4 @@
+// components/barWidgets/Battery.qml
 import Quickshell
 import Quickshell.Io
 import Quickshell.Services.UPower
@@ -6,6 +7,9 @@ import QtQuick
 
 Item {
   id: root
+
+  implicitWidth: iconText.implicitWidth
+  implicitHeight: iconText.implicitHeight
 
   property color textColor: "#ffffbb"
   property color chargingColor: "#55ff22"
@@ -42,60 +46,39 @@ Item {
   readonly property bool isDocked: chargeState != UPowerDeviceState.Charging && UPower.displayDevice.changeRate <= 0.01
   readonly property bool isLow: percentage < 0.20
 
-  onIsLowChanged: {
-    alert("Battery is Low!");
-    rowLayout.iconText.color = findColor();
-  }
-
-
-  implicitWidth: rowLayout.implicitWidth
-  implicitHeight: rowLayout.implicitHeight
-
   function findBatteryIcon() {
-    if (percentage >= 0.9) {return (isCharging|isDocked) ? battery100IconCharging : battery100Icon;};
-    if (percentage >= 0.80) {return isCharging ? battery90IconCharging : battery90Icon;};
-    if (percentage >= 0.70) {return isCharging ? battery80IconCharging : battery80Icon;};
-    if (percentage >= 0.60) {return isCharging ? battery70IconCharging : battery70Icon;};
-    if (percentage >= 0.50) {return isCharging ? battery60IconCharging : battery60Icon;};
-    if (percentage >= 0.40) {return isCharging ? battery50IconCharging : battery50Icon;};
-    if (percentage >= 0.30) {return isCharging ? battery40IconCharging : battery40Icon;};
-    if (percentage >= 0.20) {return isCharging ? battery30IconCharging : battery30Icon;};
-    if (percentage >= 0.10) {return isCharging ? battery20IconCharging : battery20Icon;};
-    if (percentage >= 0.00) {return isCharging ? battery10IconCharging : battery10Icon;};
+    if (percentage >= 0.9) {return (isCharging|isDocked) ? battery100IconCharging : battery100Icon;}
+    if (percentage >= 0.80) {return isCharging ? battery90IconCharging : battery90Icon;}
+    if (percentage >= 0.70) {return isCharging ? battery80IconCharging : battery80Icon;}
+    if (percentage >= 0.60) {return isCharging ? battery70IconCharging : battery70Icon;}
+    if (percentage >= 0.50) {return isCharging ? battery60IconCharging : battery60Icon;}
+    if (percentage >= 0.40) {return isCharging ? battery50IconCharging : battery50Icon;}
+    if (percentage >= 0.30) {return isCharging ? battery40IconCharging : battery40Icon;}
+    if (percentage >= 0.20) {return isCharging ? battery30IconCharging : battery30Icon;}
+    if (percentage >= 0.10) {return isCharging ? battery20IconCharging : battery20Icon;}
+    if (percentage >= 0.00) {return isCharging ? battery10IconCharging : battery10Icon;}
     return "󰂑";
   }
 
   function findColor() {
-    if (isCharging | isDocked) {return chargingColor;};
-    if (percentage <= 0.10) {return criticalBatteryColor;};
-    if (percentage <= 0.20) {return lowBatteryColor;};
+    if (isCharging | isDocked) {return chargingColor;}
+    if (percentage <= 0.10) {return criticalBatteryColor;}
+    if (percentage <= 0.20) {return lowBatteryColor;}
     return textColor;
   }
-  RowLayout{
-    id: rowLayout
-    spacing: 2
-    Text {
-      id: iconText
-      color: findColor()
-      text: findBatteryIcon()
-      font.pointSize: iconSize
-      font.family: "Nerd-font"
-      Layout.alignment: Qt.AlignBottom
-      Behavior on color {
-        ColorAnimation {
-          duration: 250
-          easing.type: Easing.InOutQuad
-        }
-      }
-      // Add at the end of Battery.qml, after the RowLayout
-      MouseArea {
-        anchors.fill: parent
-        onClicked: {
-          if (root.onPopupToggle) {
-            root.onPopupToggle()
-          }
-        }
-        cursorShape: Qt.PointingHandCursor
+
+  Text {
+    id: iconText
+    anchors.centerIn: parent
+    color: findColor()
+    text: findBatteryIcon()
+    font.pointSize: iconSize
+    font.family: "Nerd-font"
+    
+    Behavior on color {
+      ColorAnimation {
+        duration: 250
+        easing.type: Easing.InOutQuad
       }
     }
   }

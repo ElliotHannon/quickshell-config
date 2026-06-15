@@ -1,16 +1,17 @@
+// components/barWidgets/ArchIcon.qml
 import QtQuick
 import Qt5Compat.GraphicalEffects
 
 Item {
   id: archIcon
-  width: 60
-  height: 60
+  
+  implicitWidth: archText.implicitWidth 
+  implicitHeight: archText.implicitHeight 
 
   property color iconColor: "white"
   property color glowColor: "white"
-
-  property real baseSize: 40
-  property real hoverScale: 1.20
+  property real baseSize: 15
+  property real hoverScale: 1.25
   property bool hovered: false
   property int animationDuration: 350
   signal clicked
@@ -26,13 +27,14 @@ Item {
   }
 
   Text {
+    id: archText
     anchors.centerIn: parent
     text: ""
     font.family: "JetBrainsMono Nerd Font"
     font.pixelSize: baseSize
     color: archIcon.iconColor
 
-    scale: archIcon.hovered ? hoverScale : 1.0
+    scale: archIcon.hovered ? hoverScale : 1.
 
     Behavior on scale {
       NumberAnimation {
@@ -47,7 +49,6 @@ Item {
       }
     }
 
-
     layer.enabled: true
     layer.effect: DropShadow {
       color: archIcon.glowColor
@@ -59,7 +60,6 @@ Item {
           easing.type: Easing.InOutQuad
         }
       }
-
     }
   }
 }

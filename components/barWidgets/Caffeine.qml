@@ -8,7 +8,7 @@ Button {
     property var idleManager: null
     
     // Icon states
-    property string iconActive: "☕"  // or use a proper icon
+    property string iconActive: "☕"  
     property string iconInactive: "⏸"
     
     text: active ? iconActive : iconInactive

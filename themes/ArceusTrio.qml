@@ -20,9 +20,9 @@ QtObject {
   readonly property color archIcon:               "#a22135"
   readonly property color archGlow:               "#fc4973"
 
-  readonly property color clockText:              "#c3eaf9"
+  readonly property color clockText:              "#6ba7cc"
 
-  readonly property color batteryText:            "#6ba7cc"
+  readonly property color batteryText:            "#c3eaf9"
   readonly property color batteryCharging:        "#2ae0b8"
   readonly property color batteryLow:             "#e1c43e" 
   readonly property color batteryCritical:        "#fe383a"

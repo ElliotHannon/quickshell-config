@@ -5,7 +5,6 @@ import QtQuick.Layouts
 
 Item {
     id: root
-    anchors.fill: parent
     property int popupYpos: 0
 
     signal workspaceAdded(workspace: HyprlandWorkspace)
@@ -19,15 +18,11 @@ Item {
     property int workspaceWidth: 20
     property int focusedWidth: 40
     property int workspaceSpacing: 4
-
-
+  
+    implicitWidth: workspaceWidth  // Width of the widest indicator
+    implicitHeight: container.height  // Height from the Column content
     Column {
         id: container
-        anchors {
-            top: parent.top
-            left: parent.left
-            right: parent.right
-        }
         spacing: workspaceSpacing
         
         Repeater {
@@ -35,7 +30,7 @@ Item {
             
             Item {
                 id: workspaceItem
-                width: container.width
+                width: workspaceWidth
                 height: workspaceHeight
                 
                 required property int index

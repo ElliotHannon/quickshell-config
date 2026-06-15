@@ -5,7 +5,7 @@ import Quickshell
 import Quickshell.Hyprland 
 import Qt5Compat.GraphicalEffects 
 import "../../components/barWidgets" as Widgets
-import "../../components/popups" as Popups  // Add this import for popups
+import "../../components/popups" as Popups
 import "../../themes" as Themes 
 import "../../visuals" as Visuals 
 
@@ -20,13 +20,22 @@ PanelWindow {
     right: true 
     bottom: true 
   } 
-  implicitWidth: 30 
+  implicitWidth: 38 
   margins { 
     top: 0 
     left: 0 
     right: 0 
     bottom: 0 
   }
+
+  // ===== WIDGET BACKGROUND ====
+  property color widgetBackground: Qt.rgba(0.13, 0.1, 0.2, 0.75)
+  property int widgetRadius: 8
+  property int widgetPadding: 5
+  property int widgetMaxWidth: 32
+
+  // ===== DEBUG ====
+  property bool showCenterLine: true
 
   // ===== POPUP MANAGEMENT =====
   property var activePopups: ({})
@@ -68,12 +77,12 @@ PanelWindow {
       }
     }
 
-    // Vertical Cava visualization 
+    //Cava  
     Visuals.CavaWaveform { 
       anchors.fill: parent 
       waveColor: theme.cavaWaveColor 
       highlightColor: theme.cavaFillColor 
-      waveIntensity: 29 
+      waveIntensity: 35 
       lineWidth: 1.5 
       smoothness: 0.99
       showFill: true
@@ -89,25 +98,99 @@ PanelWindow {
       radius: parent.radius 
     }
 
-    // Main layout - THREE SECTION COLUMN
-    ColumnLayout { 
-      anchors.fill: parent 
-      spacing: 0
+    // Absolute positioning for true centering
+    Item {
+      id: container
+      anchors.fill: parent
+      anchors.margins: 3
 
-      // TOP SECTION - Arch icon + Workspaces
-      Item {
-        Layout.alignment: Qt.AlignTop
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-        Layout.preferredHeight: 8
+      // Debug center line
+      Rectangle {
+        visible: panel.showCenterLine
+        anchors {
+          horizontalCenter: parent.horizontalCenter
+          top: parent.top
+          bottom: parent.bottom
+        }
+        width: 1
+        color: "#ff0000"
+        z: 100
+      }
 
-        Column {
-          anchors.centerIn: parent
-          spacing: 0
+      // Debug edge lines
+      Rectangle {
+        visible: panel.showCenterLine
+        anchors {
+          left: parent.left
+          top: parent.top
+          bottom: parent.bottom
+        }
+        width: 1
+        color: "#00ff00"
+        z: 100
+      }
+      Rectangle {
+        visible: panel.showCenterLine
+        anchors {
+          right: parent.right
+          top: parent.top
+          bottom: parent.bottom
+        }
+        width: 1
+        color: "#00ff00"
+        z: 100
+      }
 
-          // Arch icon
+      // === TOP GROUP (anchored to top) ===
+      Column {
+        id: topGroup
+        anchors {
+          top: parent.top
+          topMargin: 6
+          horizontalCenter: parent.horizontalCenter
+        }
+        spacing: 8
+        
+        // Debug: Column bounds
+        Rectangle {
+          visible: panel.showCenterLine
+          anchors.fill: parent
+          color: "transparent"
+          border.color: "#ffff00"
+          border.width: 1
+          z: 99
+        }
+        
+        // Arch Icon - circle background
+        Rectangle {
+          id: archBackground
+          anchors.horizontalCenter: parent.horizontalCenter
+          width: widgetMaxWidth * 0.9
+          height: width  // Perfect square for circle
+          color: widgetBackground
+          radius: width / 2  // Perfect circle
+          
+          // Debug: crosshair in arch background
+          Rectangle {
+            visible: panel.showCenterLine
+            anchors.centerIn: parent
+            width: parent.width
+            height: 1
+            color: "#ff00ff"
+            z: 101
+          }
+          Rectangle {
+            visible: panel.showCenterLine
+            anchors.centerIn: parent
+            width: 1
+            height: parent.height
+            color: "#ff00ff"
+            z: 101
+          }
+          
           Widgets.ArchIcon { 
-            anchors.horizontalCenter: parent.horizontalCenter
+            id: archIconWidget
+            anchors.centerIn: parent
             animationDuration: 350 
             iconColor: theme.archIcon 
             glowColor: theme.archGlow 
@@ -115,37 +198,42 @@ PanelWindow {
             hoverScale: 1.25 
             onClicked: Themes.Manager.cycleTheme() 
           }
-
-          // Workspaces with background
-          Item {
-            anchors.horizontalCenter: parent.horizontalCenter
-            width: workspacesWidget.width + 15
-            height: workspacesWidget.height + 15
-
-            // Workspaces widget
-            Widgets.Workspaces {
-              id: workspacesWidget
-              anchors.centerIn: parent
-
-              focusedColor: theme.workspaceFocused 
-              activeColor: theme.workspaceActive 
-              inactiveColor: theme.workspaceInactive 
-              workspaceHeight: 6 
-              workspaceWidth: 6 
-              focusedWidth: 10 
-              workspaceSpacing: 4
-            }
+        }
+        
+        // Workspaces
+        Rectangle {
+          id: workspacesBackground
+          anchors.horizontalCenter: parent.horizontalCenter
+          width: widgetMaxWidth * 0.65
+          height: workspacesWidget.implicitHeight + widgetPadding * 2
+          color: widgetBackground
+          radius: widgetRadius
+          
+          Widgets.Workspaces {
+            id: workspacesWidget
+            anchors.centerIn: parent
+            focusedColor: theme.workspaceFocused 
+            activeColor: theme.workspaceActive 
+            inactiveColor: theme.workspaceInactive 
+            workspaceHeight: 6 
+            workspaceWidth: 6 
+            focusedWidth: 10 
+            workspaceSpacing: 4
           }
         }
       }
 
-      // CENTER SECTION - Clock
-      Item {
-        Layout.alignment: Qt.AlignHCenter
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-        Layout.preferredHeight: 100
-
+      // === CLOCK (true vertical center) ===
+      Rectangle {
+        anchors {
+          verticalCenter: parent.verticalCenter
+          horizontalCenter: parent.horizontalCenter
+        }
+        width: widgetMaxWidth
+        height: clockWidget.implicitHeight + widgetPadding * 2
+        color: widgetBackground
+        radius: widgetRadius
+        
         Widgets.Clock { 
           id: clockWidget
           anchors.centerIn: parent
@@ -156,24 +244,26 @@ PanelWindow {
         }
       }
 
-      // BOTTOM SECTION - Battery
-      Item {
-        Layout.fillWidth: true
-        Layout.fillHeight: false
-        Layout.alignment: Qt.AlignBottom
-        Layout.preferredHeight: 50
-        Layout.bottomMargin: 2
-
+      // === BATTERY  ===
+      Rectangle {
+        anchors {
+          bottom: parent.bottom
+          horizontalCenter: parent.horizontalCenter
+        }
+        width: widgetMaxWidth*0.9
+        height: batteryWidget.implicitHeight + widgetPadding 
+        color: widgetBackground
+        radius: widgetRadius
+        
         Widgets.Battery { 
           id: batteryWidget
-          anchors.centerIn: parent 
+          anchors.centerIn: parent
           iconSize: 20 
           textColor: theme.batteryText 
           chargingColor: theme.batteryCharging 
           lowBatteryColor: theme.batteryLow 
           criticalBatteryColor: theme.batteryCritical 
 
-          // Add click handler to toggle popup
           MouseArea {
             anchors.fill: parent
             onClicked: batteryPopup.toggle()
