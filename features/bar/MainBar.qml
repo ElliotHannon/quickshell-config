@@ -1,4 +1,4 @@
-// features/bar/Bar.qml
+// features/bar/MainBar.qml
 import QtQuick
 import QtQuick.Layouts 
 import Quickshell 
@@ -8,6 +8,7 @@ import "../../components/barWidgets" as Widgets
 import "../../components/popups" as Popups
 import "../../themes" as Themes 
 import "../../visuals" as Visuals 
+import "../../services" as Services
 
 PanelWindow { 
   id: panel 
@@ -35,14 +36,14 @@ PanelWindow {
   property int widgetMaxWidth: 32
 
   // ===== DEBUG ====
-  property bool showCenterLine: true
+  property bool showCenterLine: false
 
   // ===== POPUP MANAGEMENT =====
   property var activePopups: ({})
   property int padding: theme ? theme.popupPadding : 8
   property int radius: theme ? theme.popupRadius : 8
   property int spacing: theme ? theme.popupSpacing : 4
-  property color popupColor: theme ? theme.popupBackground : "#2a3b4c"
+  property color popupColor: theme ? theme.bgPrimary : "#2a3b4c"
 
   function collapseAllBut(exceptName) {
     for (var name in activePopups) {
@@ -60,7 +61,7 @@ PanelWindow {
   Rectangle { 
     id: bar 
     anchors.fill: parent 
-    color: theme.barBackground 
+    color: theme.bgPrimary
     Behavior on color {
       ColorAnimation { 
         duration: 250 
@@ -80,8 +81,8 @@ PanelWindow {
     //Cava  
     Visuals.CavaWaveform { 
       anchors.fill: parent 
-      waveColor: theme.cavaWaveColor 
-      highlightColor: theme.cavaFillColor 
+      waveColor: theme.cavaWave
+      highlightColor: theme.cavaFill
       waveIntensity: 35 
       lineWidth: 1.5 
       smoothness: 0.99
@@ -93,7 +94,7 @@ PanelWindow {
     // Semi-transparent overlay 
     Rectangle { 
       anchors.fill: parent 
-      color: theme.barBackground 
+      color: theme.bgPrimary
       opacity: 0.2 
       radius: parent.radius 
     }
@@ -150,8 +151,7 @@ PanelWindow {
           horizontalCenter: parent.horizontalCenter
         }
         spacing: 8
-        
-        // Debug: Column bounds
+
         Rectangle {
           visible: panel.showCenterLine
           anchors.fill: parent
@@ -160,17 +160,16 @@ PanelWindow {
           border.width: 1
           z: 99
         }
-        
+
         // Arch Icon - circle background
         Rectangle {
           id: archBackground
           anchors.horizontalCenter: parent.horizontalCenter
           width: widgetMaxWidth * 0.9
-          height: width  // Perfect square for circle
+          height: width
           color: widgetBackground
-          radius: width / 2  // Perfect circle
-          
-          // Debug: crosshair in arch background
+          radius: width / 2
+
           Rectangle {
             visible: panel.showCenterLine
             anchors.centerIn: parent
@@ -187,19 +186,19 @@ PanelWindow {
             color: "#ff00ff"
             z: 101
           }
-          
+
           Widgets.ArchIcon { 
             id: archIconWidget
             anchors.centerIn: parent
             animationDuration: 350 
-            iconColor: theme.archIcon 
-            glowColor: theme.archGlow 
+            iconColor: theme.accentDanger
+            glowColor: theme.accentDangerGlow
             baseSize: 15
             hoverScale: 1.25 
             onClicked: Themes.Manager.cycleTheme() 
           }
         }
-        
+
         // Workspaces
         Rectangle {
           id: workspacesBackground
@@ -208,13 +207,13 @@ PanelWindow {
           height: workspacesWidget.implicitHeight + widgetPadding * 2
           color: widgetBackground
           radius: widgetRadius
-          
+
           Widgets.Workspaces {
             id: workspacesWidget
             anchors.centerIn: parent
-            focusedColor: theme.workspaceFocused 
-            activeColor: theme.workspaceActive 
-            inactiveColor: theme.workspaceInactive 
+            focusedColor: theme.accentSecondary
+            activeColor: theme.textSecondary
+            inactiveColor: theme.textMuted
             workspaceHeight: 6 
             workspaceWidth: 6 
             focusedWidth: 10 
@@ -233,44 +232,93 @@ PanelWindow {
         height: clockWidget.implicitHeight + widgetPadding * 2
         color: widgetBackground
         radius: widgetRadius
-        
+
         Widgets.Clock { 
           id: clockWidget
           anchors.centerIn: parent
-          clockColor: theme.clockText 
-          hoverInCol: theme.clockText 
-          hoverOutCol: theme.clockText 
+          clockColor: theme.accentPrimary
+          hoverInCol: theme.accentPrimary
+          hoverOutCol: theme.accentPrimary
           fontSize: 15 
         }
       }
 
-      // === BATTERY  ===
-      Rectangle {
+      // === BOTTOM GROUP ===
+      Column {
         anchors {
           bottom: parent.bottom
+          bottomMargin: 6
           horizontalCenter: parent.horizontalCenter
         }
-        width: widgetMaxWidth*0.9
-        height: batteryWidget.implicitHeight + widgetPadding 
-        color: widgetBackground
-        radius: widgetRadius
-        
-        Widgets.Battery { 
-          id: batteryWidget
-          anchors.centerIn: parent
-          iconSize: 20 
-          textColor: theme.batteryText 
-          chargingColor: theme.batteryCharging 
-          lowBatteryColor: theme.batteryLow 
-          criticalBatteryColor: theme.batteryCritical 
+        spacing: 8
 
-          MouseArea {
-            anchors.fill: parent
-            onClicked: batteryPopup.toggle()
-            cursorShape: Qt.PointingHandCursor
+        // === WIFI ===
+        Rectangle {
+          width: widgetMaxWidth * 0.9
+          height: wifiWidget.implicitHeight + widgetPadding
+          color: widgetBackground
+          radius: widgetRadius
+
+          Widgets.Wifi {
+            id: wifiWidget
+            anchors.centerIn: parent
+            iconSize: 20
+            textColor: theme.statusInfo
+            connectedColor: theme.statusGood
+            disabledColor: theme.textMuted
+
+            MouseArea {
+              anchors.fill: parent
+              onClicked: wifiPopup.toggle()
+              cursorShape: Qt.PointingHandCursor
+            }
+          }
+        }
+
+        // === BATTERY ===
+        Rectangle {
+          width: widgetMaxWidth * 0.9
+          height: batteryWidget.implicitHeight + widgetPadding 
+          color: widgetBackground
+          radius: widgetRadius
+
+          Widgets.Battery { 
+            id: batteryWidget
+            anchors.centerIn: parent
+            iconSize: 20 
+            textColor: theme.statusInfo
+            chargingColor: theme.statusGood
+            lowBatteryColor: theme.statusWarning
+            criticalBatteryColor: theme.statusBad
+
+            MouseArea {
+              anchors.fill: parent
+              onClicked: batteryPopup.toggle()
+              cursorShape: Qt.PointingHandCursor
+            }
           }
         }
       }
+    }
+  }
+
+  // ===== WIFI POPUP =====
+  Popups.Popup {
+    id: wifiPopup
+    name: "wifi"
+    ref: panel
+    popupWidth: 300
+    popupHeight:320
+    yPos: 690
+
+    Component.onCompleted: panel.registerPopup(name, wifiPopup)
+
+    Popups.WifiPopup {
+      textColor: theme.textPrimary
+      accentColor1: theme.statusGood
+      accentColor2: theme.accentPrimary
+      mutedColor: theme.textMuted
+      borderColor: theme.textDim
     }
   }
 
@@ -281,16 +329,16 @@ PanelWindow {
     ref: panel
     popupWidth: 300
     popupHeight: 240
-    yPos: 920
+    yPos: 800
 
     Component.onCompleted: panel.registerPopup(name, batteryPopup)
 
-    // Popup content
     Popups.BatteryPopup {
-      textColor: theme.clockText
-      accentColor1: theme.archIcon
-      mutedColor: theme.workspaceInactive
-      borderColor: theme.workspaceActive
+      textColor: theme.textPrimary
+      accentColor1: theme.statusGood
+      accentColor2: theme.accentPrimary
+      mutedColor: theme.textMuted
+      borderColor: theme.textDim
     }
   }
 }

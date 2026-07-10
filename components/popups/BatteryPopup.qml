@@ -232,6 +232,7 @@ Item {
         height: powerProfileContainer.buttonSize
         radius: powerProfileContainer.buttonSize / 2
         color: accentColor1
+        opacity: 0.9
         anchors.verticalCenter: parent.verticalCenter
 
         x: {

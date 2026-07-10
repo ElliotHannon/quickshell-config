@@ -4,3 +4,4 @@ Workspaces 1.0 Workspaces.qml
 ClockIcon 1.0 ClockIcon.qml
 BatteryIcon 1.0 BatteryIcon.qml
 BaseIcon 1.0 BaseIcon.qml
+Wifi 1.0 Wifi.qml

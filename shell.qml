@@ -19,7 +19,16 @@ ShellRoot {
   NotificationPopup {}
   Wallpaper {}  
   VolOSD.VolumeOSD {}
-  Bar {
-    id: bar
+  MainBar {
+    id: mainBar
+  }
+  TopBar {
+    id: topBar
+  }
+  SideBar {
+    id: sideBar
+  }
+  BotBar {
+    id: botBar
   }
 }

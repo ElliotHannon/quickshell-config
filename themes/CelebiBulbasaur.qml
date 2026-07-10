@@ -5,7 +5,12 @@ QtObject {
   readonly property string themeName: "CelebiBulbasaur"
   readonly property string wallpaper: "/home/ElliotH/.config/quickshell/assets/wallpapers/CelebiBulbasaur.jpg"
   // BAR
-  readonly property color barBackground: "#013220"
+  readonly property color bgPrimary: "#013220"
+  readonly property color bgSecondary: "#033529"
+
+  // Cava Visualizer
+  readonly property color cavaWave:             Qt.rgba(0.934, 0.847, 0.45, 0.35)
+  readonly property color cavaFill:             Qt.rgba(0.934, 0.847, 0.45, 0.65)
 
   // WORKSPACES
   readonly property color workspaceActive: "#03c03c"
