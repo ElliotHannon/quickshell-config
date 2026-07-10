@@ -4,7 +4,6 @@ import QtQuick.Shapes
 
 PopupWindow {
     id: popup
-    // Reference to the parent component that manages the popup
     required property var ref
     // ref must implement the following properties:
     // - padding: int
@@ -84,7 +83,7 @@ PopupWindow {
                       property: "implicitWidth"
                       duration: 200
                       easing.type: Easing.BezierSpline
-                      easing.bezierCurve: [0.2, 0, 0, 1, 1, 1] // Standard deceleration curve
+                      easing.bezierCurve: [0.2, 0, 0, 1, 1, 1] 
                   }
                   NumberAnimation {
                       target: popup
@@ -106,7 +105,7 @@ PopupWindow {
                       property: "implicitWidth"
                       duration: 200
                       easing.type: Easing.BezierSpline
-                      easing.bezierCurve: [0.05, 0, 0.15, 1, 1, 1] // Emphasized curve for entrance
+                      easing.bezierCurve: [0.05, 0, 0.15, 1, 1, 1] 
                   }
               }
           }

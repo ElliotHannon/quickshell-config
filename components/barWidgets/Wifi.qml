@@ -6,15 +6,14 @@ import "../../services" as Services
 Item {
     id: root
     
-    property color textColor: "#ffffbb"
-    property color connectedColor: "#55ff22"
-    property color disabledColor: "#888888"
+    property color textColor:       "#ffffbb"
+    property color connectedColor:  "#55ff22"
+    property color disabledColor:   "#888888"
     property int iconSize: 15
 
     implicitWidth: iconText.width
     implicitHeight: iconText.height
     
-    // THIS IS THE KEY - forces the Network service to load
     Component.onCompleted: {
         console.log("Wifi widget loaded, network status:", Services.Network.wifiEnabled)
     }

@@ -6,7 +6,6 @@ import QtQuick
 Item {
     id: root
     
-    // Fixed explicit size
     implicitWidth: 30
     implicitHeight: 30
 
@@ -34,11 +33,10 @@ Item {
         font.pointSize: fontSize
         font.bold: true
         horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter  // Center text vertically in its bounds
+        verticalAlignment: Text.AlignVCenter  
         lineHeight: 0.55
         lineHeightMode: Text.ProportionalHeight
         
-        // Force the text to be centered by using a fixed height
         height: parent.height
         width: parent.width
 

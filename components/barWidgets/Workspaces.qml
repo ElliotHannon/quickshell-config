@@ -19,8 +19,8 @@ Item {
     property int focusedWidth: 40
     property int workspaceSpacing: 4
   
-    implicitWidth: workspaceWidth  // Width of the widest indicator
-    implicitHeight: container.height  // Height from the Column content
+    implicitWidth: workspaceWidth   
+    implicitHeight: container.height  
     Column {
         id: container
         spacing: workspaceSpacing

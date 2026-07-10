@@ -24,7 +24,6 @@ Button {
         }
     }
     
-    // Update button state from idle manager
     Connections {
         target: idleManager
         function onCaffeineModeChanged() {

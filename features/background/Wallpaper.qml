@@ -15,7 +15,6 @@ PanelWindow {
 
   readonly property var theme: Themes.Manager.active
 
-  // Track the current and next wallpaper sources
   property string currentWallpaper: theme.wallpaper
   property string nextWallpaper: theme.wallpaper
   property real transitionProgress: 0  // 0 = old wallpaper, 1 = new wallpaper
@@ -41,7 +40,7 @@ PanelWindow {
     fillMode: Image.PreserveAspectCrop
     smooth: true
     cache: false
-    opacity: 1 - wallpaper.transitionProgress //prevent white background flash
+    opacity: 1 - wallpaper.transitionProgress //KEEP OTHERWISE WHITE FLASH
   }
 
   Image { 
@@ -64,10 +63,9 @@ PanelWindow {
     easing.type: Easing.InOutQuad
 
     onFinished: {
-      // Once animation is done, update the current wallpaper
       console.log("caca")
       currentWallpaper = nextWallpaper
-      transitionProgress = 0  // Reset for next transition
+      transitionProgress = 0
     }
   }
 }

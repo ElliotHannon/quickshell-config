@@ -36,7 +36,6 @@ Item {
             
             Item { Layout.fillWidth: true }
             
-            // WiFi Toggle Switch
             Rectangle {
                 width: 50
                 height: 24
@@ -64,7 +63,6 @@ Item {
             }
         }
         
-        // Current connection info
         Text {
             text: {
                 if (!Services.Network.wifiEnabled) return "WiFi is disabled"
@@ -77,7 +75,6 @@ Item {
             visible: text !== ""
         }
         
-        // Refresh button
         Rectangle {
             Layout.fillWidth: true
             height: 1
@@ -97,7 +94,7 @@ Item {
             Item { Layout.fillWidth: true }
             
             Text {
-                text: "󰑐"  // Refresh icon
+                text: "󰑐" 
                 color: accentColor2
                 font.pointSize: 16
                 font.family: "Nerd-font"
@@ -110,7 +107,6 @@ Item {
             }
         }
         
-        // Network list
         ListView {
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -139,7 +135,6 @@ Item {
                     }
                     spacing: 8
                     
-                    // Signal strength
                     Text {
                         text: {
                             if (modelData.strength >= 80) return "▂▄▆█"
@@ -152,7 +147,6 @@ Item {
                         font.pointSize: 12
                     }
                     
-                    // SSID
                     Text {
                         text: modelData.ssid
                         color: textColor
@@ -161,7 +155,6 @@ Item {
                         elide: Text.ElideRight
                     }
                     
-                    // Connected indicator
                     Text {
                         text: modelData.active ? "✓" : ""
                         color: accentColor1
@@ -169,7 +162,6 @@ Item {
                         visible: modelData.active
                     }
 
-                    // Security
                     Text {
                         color: accentColor1
                         text: modelData.security ? "󰌾" : ""

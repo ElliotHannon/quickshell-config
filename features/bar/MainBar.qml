@@ -142,7 +142,7 @@ PanelWindow {
         z: 100
       }
 
-      // === TOP GROUP (anchored to top) ===
+      // === TOP GROUP  ===
       Column {
         id: topGroup
         anchors {

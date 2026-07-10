@@ -11,19 +11,19 @@ Item {
   id: root
   anchors.fill: parent
 
-  property var moduleRef: parent
-  property color textColor: "#ffffff"
-  property color accentColor1: "#00ffa6"
-  property color accentColor2: "#00a6ff"
-  property color mutedColor: "#888888"
-  property color borderColor: "#3a4c5e"
+  property var moduleRef:       parent
+  property color textColor:     "#ffffff"
+  property color accentColor1:  "#00ffa6"
+  property color accentColor2:  "#00a6ff"
+  property color mutedColor:    "#888888"
+  property color borderColor:   "#3a4c5e"
 
-  readonly property var displayDevice: UPower ? UPower.displayDevice : null
-  readonly property real percentage: displayDevice.percentage
-  readonly property real changeRate: displayDevice ? displayDevice.changeRate : 0
-  readonly property var chargeState: displayDevice ? displayDevice.state : 0
-  readonly property bool isCharging: chargeState == UPowerDeviceState.Charging
-  readonly property bool isDocked: chargeState != UPowerDeviceState.Charging && changeRate <= 0.01
+  readonly property var displayDevice:  UPower ? UPower.displayDevice : null
+  readonly property real percentage:    displayDevice.percentage
+  readonly property real changeRate:    displayDevice ? displayDevice.changeRate : 0
+  readonly property var chargeState:    displayDevice ? displayDevice.state : 0
+  readonly property bool isCharging:    chargeState == UPowerDeviceState.Charging
+  readonly property bool isDocked:      chargeState != UPowerDeviceState.Charging && changeRate <= 0.01
 
   Component.onCompleted: {
     if (displayDevice) {
@@ -33,7 +33,6 @@ Item {
     checkCurrentProfile()
   }
 
-  // Process for setting power profile
   Process {
     id: profileProcess
     running: false
@@ -53,7 +52,6 @@ Item {
     
   }
 
-  // Process for checking current profile
   Process {
     id: checkProcess
     running: false
@@ -87,7 +85,6 @@ Item {
     }
   }
 
-  // Process for checking hypridle
   Process {
     id: hypridleProcess
     running: false
@@ -112,7 +109,7 @@ Item {
       margins: 12
     }
 
-    // Top section - Battery info
+    // Battery info
     RowLayout {
       spacing: 12
       Layout.fillWidth: true
@@ -204,7 +201,7 @@ Item {
       }
     }
 
-    // Power Profile Selector
+    // Power Selector
     Rectangle {
       id: powerProfileContainer
       Layout.fillWidth: true
@@ -215,7 +212,6 @@ Item {
       property string profileMode: "balanced"
       property int buttonSize: 40
 
-      // Background track
       Rectangle {
         id: bg
         color: borderColor
@@ -225,7 +221,7 @@ Item {
         radius: 28
       }
 
-      // Moving selector
+      // Selector
       Rectangle {
         id: selector
         width: powerProfileContainer.buttonSize
@@ -248,7 +244,7 @@ Item {
         }
       }
 
-      // Buttons row
+      // Buttons
       Row {
         anchors.centerIn: parent
         spacing: powerProfileContainer.buttonSize

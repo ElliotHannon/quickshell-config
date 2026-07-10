@@ -5,14 +5,12 @@ import Quickshell.Services.Notifications
 Window {
     id: popupWindow
     
-    // Position top-right
     x: parent.width - width - 10
     y: 10
     width: 300
     height: childrenRect.height
     flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
     
-    // Listen for new notifications
     Connections {
         target: notificationServer
         function onNotificationAdded(notification) {
@@ -54,7 +52,6 @@ Window {
         
         function addNotification(notif) {
             model.push(notif)
-            // Auto-remove after 5 seconds
             Qt.createQmlObject(`
                 Timer {
                     interval: 5000

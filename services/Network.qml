@@ -27,13 +27,11 @@ Singleton {
         console.log("Toggling WiFi to:", cmd)
         
         if (!root.wifiEnabled) {
-            // Turning WiFi ON
-            root.wifiEnabled = true  // Optimistically update UI
+            root.wifiEnabled = true  
             enableWifiProcess.command = ["nmcli", "radio", "wifi", "on"]
         } else {
-            // Turning WiFi OFF
-            root.wifiEnabled = false  // Optimistically update UI
-            root.networks = []  // Clear networks immediately
+            root.wifiEnabled = false
+            root.networks = []  
             root.active = null
             root.wifiConnected = false
             enableWifiProcess.command = ["nmcli", "radio", "wifi", "off"]
@@ -65,7 +63,6 @@ Singleton {
         }
     }
 
-    // Monitor NetworkManager changes
     Process {
         id: monitorProcess
         running: true
@@ -82,7 +79,6 @@ Singleton {
         }
     }
 
-    // Get WiFi radio status
     Process {
         id: wifiStatusProcess
         command: ["nmcli", "radio", "wifi"]
@@ -101,16 +97,13 @@ Singleton {
         }
     }
 
-    // Toggle WiFi
     Process {
         id: enableWifiProcess
         stdout: SplitParser {
             onRead: {
                 console.log("WiFi toggle command completed")
-                // Verify the actual state
                 wifiStatusProcess.running = true
                 
-                // If we were turning WiFi on, do a rescan after a delay
                 if (root.wifiEnabled) {
                     console.log("WiFi turned on, scheduling rescan...")
                     rescanAfterToggle.start()
@@ -128,7 +121,7 @@ Singleton {
 
     Timer {
         id: rescanAfterToggle
-        interval: 2000  // Wait 2 seconds for radio to initialize
+        interval: 100  
         onTriggered: {
             console.log("Running post-enable rescan...")
             root.scanning = true
@@ -136,7 +129,6 @@ Singleton {
         }
     }
 
-    // Device status
     Process {
         id: ethernetStatusProcess
         command: ["nmcli", "dev", "status"]
@@ -167,7 +159,6 @@ Singleton {
         }
     }
 
-    // Rescan
     Process {
         id: rescanProcess
         command: ["nmcli", "dev", "wifi", "list", "--rescan", "yes"]
@@ -182,7 +173,6 @@ Singleton {
             onRead: {
                 console.log("Rescan error:", data)
                 root.scanning = false
-                // Even if rescan fails, try to get networks
                 getNetworks.running = true
             }
         }
