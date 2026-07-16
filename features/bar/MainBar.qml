@@ -275,6 +275,29 @@ PanelWindow {
           }
         }
 
+        // === BLUETOOTH ===
+        Rectangle {
+          width: widgetMaxWidth * 0.9
+          height: batteryWidget.implicitHeight + widgetPadding 
+          color: widgetBackground 
+          radius: widgetRadius
+
+          Widgets.Bluetooth {
+            id: bluetoothWidget
+            anchors.centerIn: parent
+            iconSize: 20 
+            textColor: theme.statusInfo
+            connectedColor: theme.statusGood
+            disabledColor: theme.textMuted
+
+            MouseArea {
+              anchors.fill: parent
+              onClicked: bluetoothPopup.toggle()
+              cursorShape: Qt.PointingHandCursor
+            }
+          }
+        }
+
         // === BATTERY ===
         Rectangle {
           width: widgetMaxWidth * 0.9
@@ -317,6 +340,24 @@ PanelWindow {
       textColor: theme.textPrimary
       accentColor1: theme.statusGood
       accentColor2: theme.accentPrimary
+      mutedColor: theme.textMuted
+      borderColor: theme.textDim
+    }
+  }
+  Popups.Popup {
+    id: bluetoothPopup 
+    name: "bluetooth"
+    ref: panel
+    popupWidth: 300
+    popupHeight: 320
+    yPos: 690
+
+    Component.onCompleted: panel.registerPopup(name, bluetoothPopup)
+
+    Popups.BluetoothPopup {
+      textColor: theme.textPrimary
+      accentColor1: theme.statusGood
+      accentColor2: theme.accentPrimary 
       mutedColor: theme.textMuted
       borderColor: theme.textDim
     }
