@@ -1,4 +1,4 @@
-// components/popups/BatteryPopup.qml - WORKING VERSION
+// components/popups/BatteryPopup.qml
 import Quickshell
 import Quickshell.Io
 import Quickshell.Widgets
@@ -37,35 +37,34 @@ Item {
     id: profileProcess
     running: false
     command: []
-    
+
     stdout: StdioCollector {
       onStreamFinished: {
         console.log("Profile set stdout:", this.text)
       }
     }
-    
+
     stderr: StdioCollector {
       onStreamFinished: {
         if (this.text) console.log("Profile set stderr:", this.text)
       }
     }
-    
   }
 
   Process {
     id: checkProcess
     running: false
     command: []
-    
+
     stdout: StdioCollector {
       onStreamFinished: {
         var output = this.text.toLowerCase().trim()
         console.log("Current profile output:", output)
-        
+
         if (output.includes("current active profile:")) {
           output = output.split("current active profile:")[1].trim()
         }
-        
+
         if (output.includes("powersave") || output.includes("laptop-battery")) {
           powerProfileContainer.profileMode = "powersave"
         } else if (output.includes("balanced") || output.includes("desktop")) {
@@ -73,23 +72,16 @@ Item {
         } else if (output.includes("performance") || output.includes("throughput")) {
           powerProfileContainer.profileMode = "performance"
         }
-        
+
         console.log("Set UI profile to:", powerProfileContainer.profileMode)
       }
     }
-    
+
     stderr: StdioCollector {
       onStreamFinished: {
         if (this.text) console.log("Check profile stderr:", this.text)
       }
     }
-  }
-
-  Process {
-    id: hypridleProcess
-    running: false
-    command: []
-    
   }
 
   function setPowerProfile(profile) {
@@ -109,7 +101,6 @@ Item {
       margins: 12
     }
 
-    // Battery info
     RowLayout {
       spacing: 12
       Layout.fillWidth: true
@@ -156,7 +147,6 @@ Item {
         }
       }
 
-      // Hypridle toggle
       Item {
         id: hypridle
         implicitWidth: 50
@@ -164,29 +154,81 @@ Item {
 
         property bool hypridleState: false
 
+        Process {
+          id: hypridleCheckProcess
+          running: false
+          command: ["pgrep", "hypridle"]
+
+          stdout: StdioCollector {
+            onStreamFinished: {
+              var output = this.text.trim()
+              hypridle.hypridleState = output.length > 0
+              console.log("Hypridle running:", hypridle.hypridleState)
+            }
+          }
+
+          stderr: StdioCollector {
+            onStreamFinished: {
+              if (this.text) console.log("Hypridle check stderr:", this.text)
+            }
+          }
+        }
+
+        Process {
+          id: hypridleToggleProcess
+          running: false
+          command: []
+
+          stdout: StdioCollector {
+            onStreamFinished: {
+              if (this.text) console.log("Hypridle toggle output:", this.text)
+            }
+          }
+
+          stderr: StdioCollector {
+            onStreamFinished: {
+              if (this.text) console.log("Hypridle toggle stderr:", this.text)
+            }
+          }
+        }
+
+        Timer {
+          id: stateCheckTimer
+          interval: 300
+          running: false
+          onTriggered: hypridle.checkHypridleState()
+        }
+
         Component.onCompleted: {
-          hypridleProcess.exec(["pgrep", "hypridle"])
+          checkHypridleState()
+        }
+
+        function checkHypridleState() {
+          hypridleCheckProcess.exec(["pgrep", "hypridle"])
         }
 
         function toggleHypridle() {
+          console.log("Toggling hypridle, current state:", hypridleState)
+
           if (hypridleState) {
-            Quickshell.execDetached({ command: "killall hypridle" })
+            hypridleToggleProcess.exec(["killall", "hypridle"])
           } else {
-            Quickshell.execDetached({ command: "hypridle &" })
+            hypridleToggleProcess.exec(["hypridle"])
           }
-          hypridleState = !hypridleState
+
+          stateCheckTimer.start()
         }
 
         Rectangle {
           anchors.fill: parent
           radius: 8
-          color: hypridle.hypridleState ? accentColor2 : mutedColor
+          color: hypridle.hypridleState ?  mutedColor : accentColor2
           border.width: 2
           border.color: borderColor
 
           Text {
             anchors.centerIn: parent
-            color: hypridle.hypridleState ? "#ffffff" : textColor
+            color: hypridle.hypridleState ? textColor : "#ffffff"
             font.pointSize: 24
             text: hypridle.hypridleState ? "󰾪" : ""
             font.family: "Nerd-font"
@@ -201,7 +243,6 @@ Item {
       }
     }
 
-    // Power Selector
     Rectangle {
       id: powerProfileContainer
       Layout.fillWidth: true
@@ -221,7 +262,6 @@ Item {
         radius: 28
       }
 
-      // Selector
       Rectangle {
         id: selector
         width: powerProfileContainer.buttonSize
@@ -235,7 +275,7 @@ Item {
           var centerX = (parent.width - width) / 2 - 0.8
           if (powerProfileContainer.profileMode === "powersave") return centerX - powerProfileContainer.buttonSize * 1.95
           if (powerProfileContainer.profileMode === "balanced") return centerX 
-          if (powerProfileContainer.profileMode === "throughput-performance") return centerX  + powerProfileContainer.buttonSize * 1.95
+          if (powerProfileContainer.profileMode === "throughput-performance") return centerX + powerProfileContainer.buttonSize * 1.95
           return centerX
         }
 
@@ -244,12 +284,10 @@ Item {
         }
       }
 
-      // Buttons
       Row {
         anchors.centerIn: parent
         spacing: powerProfileContainer.buttonSize
 
-        // Powersave
         Item {
           width: powerProfileContainer.buttonSize
           height: powerProfileContainer.buttonSize
@@ -258,7 +296,7 @@ Item {
             anchors.centerIn: parent
             text: ""
             font.pointSize: 20
-            color: powerProfileContainer.profileMode === "powersave" ? accentColor : mutedColor
+            color: powerProfileContainer.profileMode === "powersave" ? accentColor1 : mutedColor
             font.family: "Nerd-font"
           }
 
@@ -272,7 +310,6 @@ Item {
           }
         }
 
-        // Balanced
         Item {
           width: powerProfileContainer.buttonSize
           height: powerProfileContainer.buttonSize
@@ -281,7 +318,7 @@ Item {
             anchors.centerIn: parent
             text: "󰗑"
             font.pointSize: 20
-            color: powerProfileContainer.profileMode === "balanced" ? accentColor : mutedColor
+            color: powerProfileContainer.profileMode === "balanced" ? accentColor1 : mutedColor
             font.family: "Nerd-font"
           }
 
@@ -295,7 +332,6 @@ Item {
           }
         }
 
-        // Performance
         Item {
           width: powerProfileContainer.buttonSize
           height: powerProfileContainer.buttonSize
@@ -304,7 +340,7 @@ Item {
             anchors.centerIn: parent
             text: "󱓟"
             font.pointSize: 20
-            color: powerProfileContainer.profileMode === "throughput-performance" ? accentColor : mutedColor
+            color: powerProfileContainer.profileMode === "throughput-performance" ? accentColor1 : mutedColor
             font.family: "Nerd-font"
           }
 
