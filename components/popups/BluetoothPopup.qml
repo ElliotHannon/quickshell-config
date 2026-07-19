@@ -93,7 +93,7 @@ Item {
             Item { Layout.fillWidth: true }
             
             Text {
-                text: Services.Bluetooth.scanning ? "󰅄" : "󰑐"
+                text: Services.Bluetooth.scanning ? "󰥖" : "󰑐"
                 color: accentColor2
                 font.pointSize: 16
                 font.family: "Nerd-font"
@@ -104,15 +104,6 @@ Item {
                     cursorShape: Qt.PointingHandCursor
                 }
                 
-                RotationAnimation {
-                    target: parent
-                    property: "rotation"
-                    from: 0
-                    to: 360
-                    duration: 1000
-                    running: Services.Bluetooth.scanning
-                    loops: Animation.Infinite
-                }
             }
         }
         
